@@ -5,12 +5,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { Button } from '@/components/ui/button'
 import { fetchResumeProfile, updateResumeProfile } from '@/lib/api/users'
+import { useAuth } from '@/hooks/useAuth'
 import Navbar from '@/components/organisms/Navbar/Navbar'
 import ResumeForm from '@/components/organisms/EntryEditor/ResumeForm'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const { refreshUser } = useAuth()
   const [saveStatus, setSaveStatus] = useState('')
 
   const { data, isLoading } = useQuery({
@@ -28,9 +30,10 @@ export default function ProfilePage() {
 
   const { mutate: saveProfile, isPending } = useMutation({
     mutationFn: (formData) => updateResumeProfile(formData.resume),
-    onSuccess: () => {
+    onSuccess: async () => {
       setSaveStatus('Saved!')
       queryClient.invalidateQueries({ queryKey: ['resumeProfile'] })
+      await refreshUser()
       setTimeout(() => setSaveStatus(''), 2000)
     },
     onError: () => setSaveStatus('Save failed'),
