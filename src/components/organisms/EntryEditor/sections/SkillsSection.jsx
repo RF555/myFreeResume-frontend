@@ -1,10 +1,26 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
+import { DragDropProvider } from '@dnd-kit/react'
+import { useSortable } from '@dnd-kit/react/sortable'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { LuCode, LuPlus, LuX } from 'react-icons/lu'
+import { LuCode, LuPlus, LuX, LuGripVertical } from 'react-icons/lu'
 import SectionHeader from '../SectionHeader'
+
+function SortableSkill({ id, index, skill, onRemove }) {
+  const { ref, isDragSource } = useSortable({ id, index, group: 'skills' })
+
+  return (
+    <div ref={ref} className={`inline-flex ${isDragSource ? 'opacity-50' : ''}`}>
+      <Badge variant="secondary" className="gap-1 pr-1 cursor-grab active:cursor-grabbing">
+        <LuGripVertical className="w-3 h-3 text-gray-400" />
+        {skill}
+        <Button type="button" size="sm" variant="ghost" className="h-4 w-4 p-0 hover:bg-transparent" onClick={onRemove}><LuX className="w-3 h-3" /></Button>
+      </Badge>
+    </div>
+  )
+}
 
 export default function SkillsSection({ data, onChange, hidden, onToggleVisibility }) {
   const [input, setInput] = useState('')
@@ -12,6 +28,20 @@ export default function SkillsSection({ data, onChange, hidden, onToggleVisibili
 
   const add = () => { const v = input.trim(); if (v && !items.includes(v)) { onChange([...items, v]); setInput('') } }
   const remove = (i) => onChange(items.filter((_, idx) => idx !== i))
+
+  const handleDragOver = useCallback((event) => {
+    const { source, target } = event.operation
+    if (!source || !target || source.id === target.id) return
+
+    const oldIndex = items.indexOf(String(source.id))
+    const newIndex = items.indexOf(String(target.id))
+    if (oldIndex === -1 || newIndex === -1) return
+
+    const newItems = [...items]
+    const [moved] = newItems.splice(oldIndex, 1)
+    newItems.splice(newIndex, 0, moved)
+    onChange(newItems)
+  }, [items, onChange])
 
   return (
     <Card className={hidden ? 'opacity-50' : ''}>
@@ -25,14 +55,13 @@ export default function SkillsSection({ data, onChange, hidden, onToggleVisibili
             placeholder="Type a skill and press Enter..." className="h-8 text-sm" />
           <Button type="button" size="sm" variant="outline" onClick={add} className="h-8 px-2"><LuPlus className="w-3 h-3" /></Button>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {items.map((skill, i) => (
-            <Badge key={i} variant="secondary" className="gap-1 pr-1">
-              {skill}
-              <Button type="button" size="sm" variant="ghost" className="h-4 w-4 p-0 hover:bg-transparent" onClick={() => remove(i)}><LuX className="w-3 h-3" /></Button>
-            </Badge>
-          ))}
-        </div>
+        <DragDropProvider onDragOver={handleDragOver}>
+          <div className="flex flex-wrap gap-2">
+            {items.map((skill, i) => (
+              <SortableSkill key={skill} id={skill} index={i} skill={skill} onRemove={() => remove(i)} />
+            ))}
+          </div>
+        </DragDropProvider>
         {items.length === 0 && <p className="text-sm text-gray-400 text-center py-2">No skills added yet.</p>}
       </CardContent>
     </Card>
