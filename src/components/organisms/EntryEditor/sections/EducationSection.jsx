@@ -1,26 +1,54 @@
-import { useFieldArray } from 'react-hook-form'
-
+import { useState } from 'react'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { LuGraduationCap, LuPencil, LuTrash2 } from 'react-icons/lu'
+import SectionHeader from '../SectionHeader'
+import ItemModal, { formatYearRange } from '../ItemModal'
 
-export default function EducationSection({ control, register }) {
-  const { fields, append, remove } = useFieldArray({ control, name: 'resume.education' })
+const SCHEMA = [
+  { key: 'years', label: 'Years', type: 'yearRange' },
+  { key: 'degree', label: 'Degree', type: 'text', placeholder: 'B.S. Computer Science' },
+  { key: 'institution', label: 'Institution', type: 'text', placeholder: 'University Name' },
+]
+
+export default function EducationSection({ data, onChange, hidden, onToggleVisibility }) {
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editingIndex, setEditingIndex] = useState(null)
+  const items = data || []
+
+  const openAdd = () => { setEditingIndex(null); setModalOpen(true) }
+  const openEdit = (i) => { setEditingIndex(i); setModalOpen(true) }
+  const handleSave = (item) => {
+    if (editingIndex === null) onChange([...items, item])
+    else { const updated = [...items]; updated[editingIndex] = item; onChange(updated) }
+  }
+  const remove = (i) => onChange(items.filter((_, idx) => idx !== i))
 
   return (
-    <div className="space-y-4">
-      <h3 className="font-semibold text-lg text-[#224E76]">Education</h3>
-      {fields.map((field, index) => (
-        <div key={field.id} className="border rounded p-4 space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <Input placeholder="Degree" {...register(`resume.education.${index}.degree`)} />
-            <Input placeholder="Institution" {...register(`resume.education.${index}.institution`)} />
-            <Input placeholder="Start Date" {...register(`resume.education.${index}.start_date`)} />
-            <Input placeholder="End Date" {...register(`resume.education.${index}.end_date`)} />
+    <Card className={hidden ? 'opacity-50' : ''}>
+      <div className="px-6 pt-6">
+        <SectionHeader icon={LuGraduationCap} title="Education" onAdd={openAdd} hidden={hidden} onToggleVisibility={onToggleVisibility} />
+      </div>
+      <CardContent className="space-y-2">
+        {items.length === 0 && <p className="text-sm text-gray-400 text-center py-2">No education added yet.</p>}
+        {items.map((edu, i) => (
+          <div key={i} className="border rounded-lg px-4 py-3 bg-gray-50">
+            <div className="flex items-start justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-sm">{edu.degree || 'Untitled'}</p>
+                <p className="text-xs text-gray-500">{[edu.institution, formatYearRange(edu.years)].filter(Boolean).join(' · ')}</p>
+              </div>
+              <div className="flex gap-1 ml-2 flex-shrink-0">
+                <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => openEdit(i)}><LuPencil className="w-3 h-3" /></Button>
+                <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400 hover:text-red-600" onClick={() => remove(i)}><LuTrash2 className="w-3 h-3" /></Button>
+              </div>
+            </div>
           </div>
-          <Button type="button" variant="ghost" size="sm" className="text-red-500" onClick={() => remove(index)}>Remove</Button>
-        </div>
-      ))}
-      <Button type="button" variant="outline" size="sm" onClick={() => append({ institution: '', degree: '', start_date: '', end_date: '' })}>Add Education</Button>
-    </div>
+        ))}
+      </CardContent>
+      <ItemModal open={modalOpen} onClose={() => setModalOpen(false)} onSave={handleSave} schema={SCHEMA}
+        initialData={editingIndex !== null ? items[editingIndex] : null}
+        title={editingIndex !== null ? 'Edit Education' : 'Add Education'} />
+    </Card>
   )
 }

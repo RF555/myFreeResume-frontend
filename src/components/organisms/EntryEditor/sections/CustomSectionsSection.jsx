@@ -1,37 +1,56 @@
-import { useFieldArray } from 'react-hook-form'
-
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { LuLayoutList, LuPlus, LuTrash2, LuX } from 'react-icons/lu'
 
-function ItemList({ control, register, basePath }) {
-  const { fields, append, remove } = useFieldArray({ control, name: basePath })
-  return (
-    <div className="space-y-1 pl-4">
-      {fields.map((field, i) => (
-        <div key={field.id} className="flex gap-2">
-          <Input {...register(`${basePath}.${i}`)} className="text-sm" />
-          <Button type="button" variant="ghost" size="sm" onClick={() => remove(i)}>x</Button>
-        </div>
-      ))}
-      <Button type="button" variant="ghost" size="sm" onClick={() => append('')}>+ Add item</Button>
-    </div>
-  )
-}
+export default function CustomSectionsSection({ data, onChange }) {
+  const sections = data || []
 
-export default function CustomSectionsSection({ control, register }) {
-  const { fields, append, remove } = useFieldArray({ control, name: 'resume.custom_sections' })
+  const addSection = () => onChange([...sections, { title: '', items: [] }])
+  const removeSection = (i) => onChange(sections.filter((_, idx) => idx !== i))
+  const updateSection = (i, updated) => { const s = [...sections]; s[i] = updated; onChange(s) }
+
+  const addItem = (si) => {
+    const s = { ...sections[si], items: [...(sections[si].items || []), ''] }
+    updateSection(si, s)
+  }
+  const removeItem = (si, ii) => {
+    const s = { ...sections[si], items: sections[si].items.filter((_, idx) => idx !== ii) }
+    updateSection(si, s)
+  }
+  const editItem = (si, ii, val) => {
+    const items = [...sections[si].items]; items[ii] = val
+    updateSection(si, { ...sections[si], items })
+  }
 
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold text-lg text-[#224E76]">Custom Sections</h3>
-      {fields.map((field, sIndex) => (
-        <div key={field.id} className="border rounded p-4 space-y-3">
-          <Input placeholder="Section Title" {...register(`resume.custom_sections.${sIndex}.title`)} className="font-semibold" />
-          <ItemList control={control} register={register} basePath={`resume.custom_sections.${sIndex}.items`} />
-          <Button type="button" variant="ghost" size="sm" className="text-red-500" onClick={() => remove(sIndex)}>Remove Section</Button>
-        </div>
+      {sections.map((sec, si) => (
+        <Card key={si}>
+          <div className="px-6 pt-6">
+            <div className="flex items-center justify-between pb-3">
+              <div className="flex items-center gap-2 flex-1">
+                <LuLayoutList className="w-4 h-4" />
+                <Input value={sec.title} onChange={(e) => updateSection(si, { ...sec, title: e.target.value })} placeholder="Section Title" className="h-8 text-base font-semibold border-none shadow-none p-0 focus-visible:ring-0" />
+              </div>
+              <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400 hover:text-red-600" onClick={() => removeSection(si)}><LuTrash2 className="w-3.5 h-3.5" /></Button>
+            </div>
+          </div>
+          <CardContent className="space-y-1">
+            {(sec.items || []).map((item, ii) => (
+              <div key={ii} className="flex gap-2 items-center">
+                <span className="text-gray-400 text-xs">•</span>
+                <Input value={item} onChange={(e) => editItem(si, ii, e.target.value)} className="h-7 text-sm flex-1" />
+                <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400" onClick={() => removeItem(si, ii)}><LuX className="w-3 h-3" /></Button>
+              </div>
+            ))}
+            <Button type="button" size="sm" variant="ghost" onClick={() => addItem(si)} className="gap-1 text-xs"><LuPlus className="w-3 h-3" /> Add item</Button>
+          </CardContent>
+        </Card>
       ))}
-      <Button type="button" variant="outline" size="sm" onClick={() => append({ title: '', items: [] })}>Add Custom Section</Button>
+      <Button type="button" variant="outline" onClick={addSection} className="w-full gap-1">
+        <LuPlus className="w-4 h-4" /> Add Custom Section
+      </Button>
     </div>
   )
 }

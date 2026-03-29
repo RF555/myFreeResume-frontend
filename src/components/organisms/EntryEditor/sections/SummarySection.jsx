@@ -1,12 +1,17 @@
-import { Label } from '@/components/ui/label'
+import { Card, CardContent } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
+import { LuFileText } from 'react-icons/lu'
+import SectionHeader from '../SectionHeader'
 
-export default function SummarySection({ register }) {
+export default function SummarySection({ data, onChange, hidden, onToggleVisibility }) {
   return (
-    <div className="space-y-2">
-      <h3 className="font-semibold text-lg text-[#224E76]">Professional Summary</h3>
-      <Label htmlFor="resume.summary">Summary</Label>
-      <Textarea id="resume.summary" rows={4} {...register('resume.summary')} />
-    </div>
+    <Card className={hidden ? 'opacity-50' : ''}>
+      <div className="px-6 pt-6">
+        <SectionHeader icon={LuFileText} title="Professional Summary" hidden={hidden} onToggleVisibility={onToggleVisibility} />
+      </div>
+      <CardContent>
+        <Textarea value={data || ''} onChange={(e) => onChange(e.target.value)} rows={4} placeholder="Write a brief professional summary..." />
+      </CardContent>
+    </Card>
   )
 }

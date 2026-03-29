@@ -1,40 +1,65 @@
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { downloadResume, downloadCoverLetter, refreshEntryFromProfile } from '@/lib/api/entries'
-import { useAutoSave } from '@/hooks/useAutoSave'
+import { updateEntry } from '@/lib/api/entries'
 import SaveIndicator from '@/components/atoms/SaveIndicator/SaveIndicator'
 import ResumeForm from './ResumeForm'
 import CoverLetterForm from './CoverLetterForm'
 
+const DEFAULT_SECTION_ORDER = ['skill_highlights', 'experience', 'education', 'languages']
+const AUTO_SAVE_DELAY = 2000
+
 export default function EntryEditor({ entry }) {
   const queryClient = useQueryClient()
+  const [resume, setResume] = useState(entry.resume)
+  const [coverLetter, setCoverLetter] = useState(entry.cover_letter)
+  const [hiddenSections, setHiddenSections] = useState(entry.hidden_sections || {})
+  const [sectionOrder, setSectionOrder] = useState(entry.section_order || DEFAULT_SECTION_ORDER)
+  const [saving, setSaving] = useState(false)
   const [refreshMsg, setRefreshMsg] = useState('')
+  const saveTimeout = useRef(null)
+  const lastSaved = useRef(null)
 
-  const { register, control, watch, reset } = useForm({
-    defaultValues: {
-      resume: entry.resume,
-      cover_letter: entry.cover_letter,
-    },
+  const { mutate: save } = useMutation({
+    mutationFn: (data) => updateEntry(entry.id, data),
+    onMutate: () => setSaving(true),
+    onSettled: () => setSaving(false),
   })
 
-  const formData = watch()
-  const { saving } = useAutoSave(entry.id, formData)
+  const triggerSave = useCallback(() => {
+    const payload = { resume, cover_letter: coverLetter, hidden_sections: hiddenSections, section_order: sectionOrder }
+    const serialized = JSON.stringify(payload)
+    if (serialized === lastSaved.current) return
+    lastSaved.current = serialized
+    save(payload)
+  }, [resume, coverLetter, hiddenSections, sectionOrder, save])
 
-  const { mutate: refreshFromProfile, isPending: isRefreshing } = useMutation({
+  useEffect(() => {
+    if (saveTimeout.current) clearTimeout(saveTimeout.current)
+    saveTimeout.current = setTimeout(triggerSave, AUTO_SAVE_DELAY)
+    return () => { if (saveTimeout.current) clearTimeout(saveTimeout.current) }
+  }, [resume, coverLetter, hiddenSections, sectionOrder, triggerSave])
+
+  const toggleVisibility = useCallback((sectionId) => {
+    setHiddenSections(prev => {
+      const next = { ...prev }
+      if (next[sectionId]) delete next[sectionId]
+      else next[sectionId] = true
+      return next
+    })
+  }, [])
+
+  const { mutate: doRefresh, isPending: isRefreshing } = useMutation({
     mutationFn: () => refreshEntryFromProfile(entry.id),
     onSuccess: (data) => {
-      reset({ resume: data.resume, cover_letter: data.cover_letter })
+      setResume(data.resume)
+      setCoverLetter(data.cover_letter)
       queryClient.invalidateQueries({ queryKey: ['entry', entry.id] })
       setRefreshMsg('Resume refreshed from profile')
-      setTimeout(() => setRefreshMsg(''), 3000)
-    },
-    onError: () => {
-      setRefreshMsg('Refresh failed')
       setTimeout(() => setRefreshMsg(''), 3000)
     },
   })
@@ -49,13 +74,8 @@ export default function EntryEditor({ entry }) {
           {refreshMsg && <span className="text-sm text-green-600">{refreshMsg}</span>}
         </div>
         <div className="flex gap-2 flex-wrap">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => refreshFromProfile()}
-            disabled={isRefreshing}
-          >
-            {isRefreshing ? 'Refreshing...' : 'Reset Resume from Profile'}
+          <Button variant="ghost" size="sm" onClick={() => doRefresh()} disabled={isRefreshing}>
+            {isRefreshing ? 'Refreshing...' : 'Reset from Profile'}
           </Button>
           <Button variant="outline" onClick={() => downloadResume(entry.id)}>Download Resume</Button>
           <Button variant="outline" onClick={() => downloadCoverLetter(entry.id)}>Download Cover Letter</Button>
@@ -67,10 +87,17 @@ export default function EntryEditor({ entry }) {
           <TabsTrigger value="cover-letter">Cover Letter</TabsTrigger>
         </TabsList>
         <TabsContent value="resume" className="pt-6">
-          <ResumeForm register={register} control={control} />
+          <ResumeForm
+            data={resume}
+            onChange={setResume}
+            hiddenSections={hiddenSections}
+            onToggleVisibility={toggleVisibility}
+            sectionOrder={sectionOrder}
+            onReorderSections={setSectionOrder}
+          />
         </TabsContent>
         <TabsContent value="cover-letter" className="pt-6">
-          <CoverLetterForm register={register} control={control} />
+          <CoverLetterForm data={coverLetter} onChange={setCoverLetter} />
         </TabsContent>
       </Tabs>
     </main>
