@@ -10,6 +10,7 @@ import AuthCallbackPage from '@/pages/AuthCallbackPage'
 import ProtectedRoute from '@/components/organisms/ProtectedRoute/ProtectedRoute'
 import DashboardPage from '@/pages/DashboardPage'
 import EntryPage from '@/pages/EntryPage'
+import ProfilePage from '@/pages/ProfilePage'
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
             <Route path="/auth/callback/:provider" element={<AuthCallbackPage />} />
             <Route element={<ProtectedRoute />}>
+              <Route path="/profile" element={<ProfilePage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/entry/:id" element={<EntryPage />} />
             </Route>

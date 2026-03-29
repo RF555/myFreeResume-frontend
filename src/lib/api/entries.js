@@ -5,6 +5,7 @@ export const createEntry = (jobTypeId, companyName) => apiJson(`/api/job-types/$
 export const updateEntry = (id, data) => apiJson(`/api/entries/${id}`, { method: 'PUT', body: JSON.stringify(data) })
 export const deleteEntry = (id) => apiJson(`/api/entries/${id}`, { method: 'DELETE' })
 export const cloneEntry = (id, jobTypeId, companyName) => apiJson(`/api/entries/${id}/clone`, { method: 'POST', body: JSON.stringify({ job_type_id: jobTypeId, company_name: companyName }) })
+export const refreshEntryFromProfile = (id) => apiJson(`/api/entries/${id}/refresh-from-profile`, { method: 'POST' })
 
 export async function downloadResume(id) {
   const blob = await apiBlob(`/api/entries/${id}/download/resume`)
