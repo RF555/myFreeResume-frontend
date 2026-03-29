@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
+import { DragDropProvider } from '@dnd-kit/react'
+import { useSortable } from '@dnd-kit/react/sortable'
 import { LuGripVertical } from 'react-icons/lu'
 
 import PersonalInfoSection from './sections/PersonalInfoSection'
@@ -10,17 +11,44 @@ import EducationSection from './sections/EducationSection'
 import LanguagesSection from './sections/LanguagesSection'
 import CustomSectionsSection from './sections/CustomSectionsSection'
 
-const DRAGGABLE_SECTIONS = [
-  { id: 'skill_highlights', Component: SkillsSection, dataKey: 'skill_highlights' },
-  { id: 'experience', Component: ExperienceSection, dataKey: 'experience' },
-  { id: 'education', Component: EducationSection, dataKey: 'education' },
-  { id: 'languages', Component: LanguagesSection, dataKey: 'languages' },
-]
+const SECTION_MAP = {
+  skill_highlights: { Component: SkillsSection, dataKey: 'skill_highlights' },
+  experience: { Component: ExperienceSection, dataKey: 'experience' },
+  education: { Component: EducationSection, dataKey: 'education' },
+  languages: { Component: LanguagesSection, dataKey: 'languages' },
+}
+
+const DEFAULT_ORDER = ['skill_highlights', 'experience', 'education', 'languages']
+
+function SortableSection({ id, index, resume, hidden, updateField, onToggleVisibility }) {
+  const section = SECTION_MAP[id]
+  if (!section) return null
+
+  const { ref, isDragSource } = useSortable({ id, index, group: 'resume-sections' })
+
+  return (
+    <div ref={ref} className={isDragSource ? 'opacity-60 shadow-xl' : ''}>
+      <div className="flex gap-2 items-start">
+        <div className="pt-7 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500">
+          <LuGripVertical className="w-5 h-5" />
+        </div>
+        <div className="flex-1">
+          <section.Component
+            data={resume[section.dataKey]}
+            onChange={(val) => updateField(section.dataKey, val)}
+            hidden={hidden}
+            onToggleVisibility={onToggleVisibility}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function ResumeForm({ data, onChange, hiddenSections, onToggleVisibility, sectionOrder, onReorderSections }) {
   const resume = data || {}
   const hidden = hiddenSections || {}
-  const order = sectionOrder || DRAGGABLE_SECTIONS.map(s => s.id)
+  const order = sectionOrder || DEFAULT_ORDER
 
   const updateField = useCallback((key, value) => {
     onChange({ ...resume, [key]: value })
@@ -35,17 +63,19 @@ export default function ResumeForm({ data, onChange, hiddenSections, onToggleVis
     })
   }, [resume, onChange])
 
-  const onDragEnd = useCallback((result) => {
-    if (!result.destination) return
+  const handleDragOver = useCallback((event) => {
+    const { source, target } = event.operation
+    if (!source || !target || source.id === target.id) return
+
+    const oldIndex = order.indexOf(String(source.id))
+    const newIndex = order.indexOf(String(target.id))
+    if (oldIndex === -1 || newIndex === -1) return
+
     const newOrder = [...order]
-    const [moved] = newOrder.splice(result.source.index, 1)
-    newOrder.splice(result.destination.index, 0, moved)
+    const [moved] = newOrder.splice(oldIndex, 1)
+    newOrder.splice(newIndex, 0, moved)
     onReorderSections(newOrder)
   }, [order, onReorderSections])
-
-  const orderedSections = order
-    .map(id => DRAGGABLE_SECTIONS.find(s => s.id === id))
-    .filter(Boolean)
 
   return (
     <div className="space-y-4">
@@ -62,36 +92,21 @@ export default function ResumeForm({ data, onChange, hiddenSections, onToggleVis
         onToggleVisibility={() => onToggleVisibility('summary')}
       />
 
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="resume-sections">
-          {(provided) => (
-            <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-4">
-              {orderedSections.map((section, index) => (
-                <Draggable key={section.id} draggableId={section.id} index={index}>
-                  {(provided, snapshot) => (
-                    <div ref={provided.innerRef} {...provided.draggableProps} className={snapshot.isDragging ? 'opacity-80 shadow-xl' : ''}>
-                      <div className="flex gap-2 items-start">
-                        <div {...provided.dragHandleProps} className="pt-7 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500">
-                          <LuGripVertical className="w-5 h-5" />
-                        </div>
-                        <div className="flex-1">
-                          <section.Component
-                            data={resume[section.dataKey]}
-                            onChange={(val) => updateField(section.dataKey, val)}
-                            hidden={hidden[section.id]}
-                            onToggleVisibility={() => onToggleVisibility(section.id)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+      <DragDropProvider onDragOver={handleDragOver}>
+        <div className="space-y-4">
+          {order.map((id, index) => (
+            <SortableSection
+              key={id}
+              id={id}
+              index={index}
+              resume={resume}
+              hidden={hidden[id]}
+              updateField={updateField}
+              onToggleVisibility={() => onToggleVisibility(id)}
+            />
+          ))}
+        </div>
+      </DragDropProvider>
 
       <CustomSectionsSection
         data={resume.custom_sections}
