@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -10,10 +11,17 @@ export default function CreateEntryDialog({ jobTypeId }) {
   const [open, setOpen] = useState(false)
   const [company, setCompany] = useState('')
   const { mutate, isPending } = useCreateEntry()
+  const navigate = useNavigate()
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    mutate({ jobTypeId, companyName: company }, { onSuccess: () => { setOpen(false); setCompany('') } })
+    mutate({ jobTypeId, companyName: company }, {
+      onSuccess: (data) => {
+        setOpen(false)
+        setCompany('')
+        navigate(`/entry/${data.id}`)
+      },
+    })
   }
 
   return (
