@@ -1,6 +1,6 @@
 export const BRAND_COLORS = {
-  NAVY: '#224E76',
-  NAVY_DARK: '#1a3d5c',
+  NAVY: '#6B4C3B',
+  NAVY_DARK: '#523A2D',
   BODY_TEXT: '#2D262E',
 }
 

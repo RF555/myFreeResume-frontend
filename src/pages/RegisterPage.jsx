@@ -8,8 +8,9 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-center text-2xl">Create Account</CardTitle>
+        <CardHeader className="text-center">
+          <Link to="/"><img src="/logo.svg" alt="myFreeResume" className="h-12 w-12 mx-auto mb-2" /></Link>
+          <CardTitle className="text-2xl">Create Account</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <RegisterForm />

@@ -74,7 +74,7 @@ export default function ProfilePage() {
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-[#224E76]">My Resume Profile</h1>
+            <h1 className="text-2xl font-bold text-[#6B4C3B]">My Resume Profile</h1>
             <SaveIndicator saving={saving} />
           </div>
           <Button variant="outline" onClick={() => navigate('/dashboard')}>Go to Dashboard</Button>

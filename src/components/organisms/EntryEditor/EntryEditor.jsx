@@ -69,7 +69,7 @@ export default function EntryEditor({ entry }) {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
         <div className="flex items-center gap-4">
           <Link to="/dashboard" className="text-gray-500 hover:text-gray-700">&larr; Back</Link>
-          <h1 className="text-xl font-bold text-[#224E76]">{entry.company_name}</h1>
+          <h1 className="text-xl font-bold text-[#6B4C3B]">{entry.company_name}</h1>
           <SaveIndicator saving={saving} />
           {refreshMsg && <span className="text-sm text-green-600">{refreshMsg}</span>}
         </div>
