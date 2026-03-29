@@ -1,9 +1,9 @@
-import { apiJson, setAccessToken } from './client'
+import { apiPublic, setAccessToken, clearAccessToken } from './client'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 export async function login(email, password) {
-  const data = await apiJson('/api/auth/login', {
+  const data = await apiPublic('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   })
@@ -12,7 +12,7 @@ export async function login(email, password) {
 }
 
 export async function register(email, password, name) {
-  const data = await apiJson('/api/auth/register', {
+  const data = await apiPublic('/api/auth/register', {
     method: 'POST',
     body: JSON.stringify({ email, password, name }),
   })
@@ -21,8 +21,12 @@ export async function register(email, password, name) {
 }
 
 export async function logout() {
-  await apiJson('/api/auth/logout', { method: 'POST' })
-  setAccessToken(null)
+  try {
+    await apiPublic('/api/auth/logout', { method: 'POST' })
+  } catch {
+    // Logout may fail if session is already expired
+  }
+  clearAccessToken()
 }
 
 export function getOAuthUrl(provider) {

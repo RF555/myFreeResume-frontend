@@ -1,6 +1,7 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 let accessToken = null
+let isRefreshing = false
 
 export function setAccessToken(token) {
   accessToken = token
@@ -30,7 +31,7 @@ export async function apiFetch(path, options = {}) {
     credentials: 'include',
   })
 
-  if (response.status === 401 && accessToken) {
+  if (response.status === 401 && accessToken && !isRefreshing) {
     const refreshed = await refreshToken()
     if (refreshed) {
       headers['Authorization'] = `Bearer ${accessToken}`
@@ -42,6 +43,8 @@ export async function apiFetch(path, options = {}) {
 }
 
 async function refreshToken() {
+  if (isRefreshing) return false
+  isRefreshing = true
   try {
     const response = await fetch(`${API_URL}/api/auth/refresh`, {
       method: 'POST',
@@ -54,6 +57,8 @@ async function refreshToken() {
     }
   } catch {
     // Refresh failed
+  } finally {
+    isRefreshing = false
   }
   accessToken = null
   return false
@@ -74,4 +79,20 @@ export async function apiBlob(path) {
     throw new Error('Download failed')
   }
   return response.blob()
+}
+
+export async function apiPublic(path, options = {}) {
+  const response = await fetch(`${API_URL}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+    credentials: 'include',
+  })
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ detail: 'Request failed' }))
+    throw new Error(error.detail || 'Request failed')
+  }
+  return response.json()
 }
