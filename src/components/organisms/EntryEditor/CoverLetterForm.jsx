@@ -23,7 +23,7 @@ export default function CoverLetterForm({ data, onChange }) {
           <div><Label>{t('coverLetter.hiringManagerName')}</Label><Input value={cl.addressee_name || ''} onChange={(e) => set('addressee_name', e.target.value)} /></div>
           <div><Label>{t('coverLetter.company')}</Label><Input value={cl.addressee_company || ''} onChange={(e) => set('addressee_company', e.target.value)} /></div>
           <div><Label>{t('coverLetter.date')}</Label><Input value={cl.date || ''} onChange={(e) => set('date', e.target.value)} /></div>
-          <div><Label>{t('coverLetter.subject')}</Label><Input value={cl.subject || ''} onChange={(e) => set('subject', e.target.value)} /></div>
+          <div><Label>{t('coverLetter.salutation')}</Label><Input value={cl.salutation || ''} onChange={(e) => set('salutation', e.target.value)} placeholder={t('coverLetter.salutationPlaceholder')} /></div>
         </div>
       </div>
       <div>

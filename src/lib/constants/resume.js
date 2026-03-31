@@ -1,4 +1,19 @@
-export const DEFAULT_SECTION_ORDER = ['skill_highlights', 'experience', 'education', 'languages']
+export const DEFAULT_SECTION_ORDER = [
+  'education',
+  'core_competencies',
+  'skill_categories',
+  'skill_highlights',
+  'experience',
+  'languages',
+]
+
+export const SIDEBAR_SECTIONS = new Set([
+  'contact',
+  'education',
+  'skill_categories',
+  'core_competencies',
+  'skill_highlights',
+])
 
 export const DOCUMENT_TYPES = {
   RESUME: 'resume',

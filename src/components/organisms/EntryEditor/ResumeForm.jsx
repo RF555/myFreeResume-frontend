@@ -8,6 +8,8 @@ import { DEFAULT_SECTION_ORDER } from '@/lib/constants'
 import PersonalInfoSection from './sections/PersonalInfoSection'
 import SummarySection from './sections/SummarySection'
 import SkillsSection from './sections/SkillsSection'
+import SkillCategoriesSection from './sections/SkillCategoriesSection'
+import CoreCompetenciesSection from './sections/CoreCompetenciesSection'
 import ExperienceSection from './sections/ExperienceSection'
 import EducationSection from './sections/EducationSection'
 import LanguagesSection from './sections/LanguagesSection'
@@ -15,12 +17,14 @@ import CustomSectionsSection from './sections/CustomSectionsSection'
 
 const SECTION_MAP = {
   skill_highlights: { Component: SkillsSection, dataKey: 'skill_highlights' },
+  skill_categories: { Component: SkillCategoriesSection, dataKey: 'skill_categories' },
+  core_competencies: { Component: CoreCompetenciesSection, dataKey: 'core_competencies' },
   experience: { Component: ExperienceSection, dataKey: 'experience' },
   education: { Component: EducationSection, dataKey: 'education' },
   languages: { Component: LanguagesSection, dataKey: 'languages' },
 }
 
-const DEFAULT_ORDER = DEFAULT_SECTION_ORDER
+const DEFAULT_ORDER = ['education', 'core_competencies', 'skill_categories', 'skill_highlights', 'experience', 'languages']
 
 function SortableSection({ id, index, resume, hidden, updateField, onToggleVisibility }) {
   const section = SECTION_MAP[id]
