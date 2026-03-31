@@ -8,4 +8,13 @@ describe('OAuthButtons', () => {
     expect(screen.getByText('Continue with GitHub')).toBeInTheDocument()
     expect(screen.getByText('Continue with LinkedIn')).toBeInTheDocument()
   })
+
+  it('renders OAuth links with href attributes', () => {
+    render(<OAuthButtons />)
+    const links = screen.getAllByRole('link')
+    expect(links).toHaveLength(3)
+    links.forEach(link => {
+      expect(link).toHaveAttribute('href')
+    })
+  })
 })

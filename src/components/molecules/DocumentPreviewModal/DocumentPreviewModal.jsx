@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { renderAsync } from 'docx-preview'
+import { cn } from '@/lib/utils'
 
 import {
   Dialog,
@@ -10,6 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { fetchResumeBlob, fetchCoverLetterBlob, downloadResume, downloadCoverLetter } from '@/lib/api/entries'
+import { DOCUMENT_TYPES } from '@/lib/constants'
 
 const PREVIEW_OPTIONS = {
   breakPages: true,
@@ -19,8 +21,8 @@ const PREVIEW_OPTIONS = {
 }
 
 const LABELS = {
-  resume: 'Resume Preview',
-  'cover-letter': 'Cover Letter Preview',
+  [DOCUMENT_TYPES.RESUME]: 'Resume Preview',
+  [DOCUMENT_TYPES.COVER_LETTER]: 'Cover Letter Preview',
 }
 
 export default function DocumentPreviewModal({ open, onClose, documentType, entryId }) {
@@ -35,7 +37,7 @@ export default function DocumentPreviewModal({ open, onClose, documentType, entr
     setError(null)
 
     try {
-      const fetchBlob = documentType === 'resume' ? fetchResumeBlob : fetchCoverLetterBlob
+      const fetchBlob = documentType === DOCUMENT_TYPES.RESUME ? fetchResumeBlob : fetchCoverLetterBlob
       const blob = await fetchBlob(entryId)
       const arrayBuffer = await blob.arrayBuffer()
 
@@ -55,7 +57,7 @@ export default function DocumentPreviewModal({ open, onClose, documentType, entr
   }, [loadPreview])
 
   const handleDownload = () => {
-    if (documentType === 'resume') {
+    if (documentType === DOCUMENT_TYPES.RESUME) {
       downloadResume(entryId)
     } else {
       downloadCoverLetter(entryId)
@@ -95,7 +97,7 @@ export default function DocumentPreviewModal({ open, onClose, documentType, entr
 
           <div
             ref={containerRef}
-            className={loading || error ? 'hidden' : ''}
+            className={cn((loading || error) && 'hidden')}
           />
         </div>
 

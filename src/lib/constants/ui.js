@@ -5,3 +5,5 @@ export const BRAND_COLORS = {
 }
 
 export const AUTO_SAVE_DELAY_MS = 2000
+export const NOTIFICATION_DISPLAY_MS = 3000
+export const YEAR_LOOKBACK = 50

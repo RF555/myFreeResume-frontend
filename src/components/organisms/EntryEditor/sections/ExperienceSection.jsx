@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { LuBriefcase, LuPencil, LuTrash2 } from 'react-icons/lu'
-import SectionHeader from '../SectionHeader'
-import ItemModal, { formatYearRange } from '../ItemModal'
+import { cn } from '@/lib/utils'
+import SectionHeader from '@/components/organisms/EntryEditor/SectionHeader'
+import ItemModal, { formatYearRange } from '@/components/organisms/EntryEditor/ItemModal'
 
 const SCHEMA = [
   { key: 'years', label: 'Years', type: 'yearRange' },
@@ -26,7 +27,7 @@ export default function ExperienceSection({ data, onChange, hidden, onToggleVisi
   const remove = (i) => onChange(items.filter((_, idx) => idx !== i))
 
   return (
-    <Card className={hidden ? 'opacity-50' : ''}>
+    <Card className={cn(hidden && 'opacity-50')}>
       <div className="px-6 pt-6">
         <SectionHeader icon={LuBriefcase} title="Professional Experience" onAdd={openAdd} hidden={hidden} onToggleVisibility={onToggleVisibility} />
       </div>

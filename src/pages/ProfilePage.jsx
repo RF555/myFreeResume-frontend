@@ -8,8 +8,7 @@ import { useAuth } from '@/hooks/useAuth'
 import Navbar from '@/components/organisms/Navbar/Navbar'
 import ResumeForm from '@/components/organisms/EntryEditor/ResumeForm'
 import SaveIndicator from '@/components/atoms/SaveIndicator/SaveIndicator'
-
-const AUTO_SAVE_DELAY = 2000
+import { AUTO_SAVE_DELAY_MS, DEFAULT_SECTION_ORDER, QUERY_KEYS } from '@/lib/constants'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
@@ -17,13 +16,13 @@ export default function ProfilePage() {
   const { refreshUser } = useAuth()
   const [resume, setResume] = useState(null)
   const [hiddenSections, setHiddenSections] = useState({})
-  const [sectionOrder, setSectionOrder] = useState(['skill_highlights', 'experience', 'education', 'languages'])
+  const [sectionOrder, setSectionOrder] = useState(DEFAULT_SECTION_ORDER)
   const [saving, setSaving] = useState(false)
   const saveTimeout = useRef(null)
   const lastSaved = useRef(null)
   const hasInitialized = useRef(false)
 
-  const { data, isLoading } = useQuery({ queryKey: ['resumeProfile'], queryFn: fetchResumeProfile })
+  const { data, isLoading } = useQuery({ queryKey: [QUERY_KEYS.RESUME_PROFILE], queryFn: fetchResumeProfile })
 
   useEffect(() => {
     if (data?.resume_profile) {
@@ -39,7 +38,7 @@ export default function ProfilePage() {
     mutationFn: (profileData) => updateResumeProfile(profileData),
     onMutate: () => setSaving(true),
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: ['resumeProfile'] })
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.RESUME_PROFILE] })
       await refreshUser()
     },
     onSettled: () => setSaving(false),
@@ -56,7 +55,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!hasInitialized.current || !resume) return
     if (saveTimeout.current) clearTimeout(saveTimeout.current)
-    saveTimeout.current = setTimeout(triggerSave, AUTO_SAVE_DELAY)
+    saveTimeout.current = setTimeout(triggerSave, AUTO_SAVE_DELAY_MS)
     return () => { if (saveTimeout.current) clearTimeout(saveTimeout.current) }
   }, [resume, triggerSave])
 
@@ -74,7 +73,7 @@ export default function ProfilePage() {
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-[#6B4C3B]">My Resume Profile</h1>
+            <h1 className="text-2xl font-bold text-brand">My Resume Profile</h1>
             <SaveIndicator saving={saving} />
           </div>
           <Button variant="outline" onClick={() => navigate('/dashboard')}>Go to Dashboard</Button>

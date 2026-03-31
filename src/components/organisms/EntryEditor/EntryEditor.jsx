@@ -11,9 +11,7 @@ import SaveIndicator from '@/components/atoms/SaveIndicator/SaveIndicator'
 import ResumeForm from './ResumeForm'
 import CoverLetterForm from './CoverLetterForm'
 import DocumentPreviewModal from '@/components/molecules/DocumentPreviewModal/DocumentPreviewModal'
-
-const DEFAULT_SECTION_ORDER = ['skill_highlights', 'experience', 'education', 'languages']
-const AUTO_SAVE_DELAY = 2000
+import { AUTO_SAVE_DELAY_MS, NOTIFICATION_DISPLAY_MS, DEFAULT_SECTION_ORDER, DOCUMENT_TYPES, QUERY_KEYS } from '@/lib/constants'
 
 export default function EntryEditor({ entry }) {
   const queryClient = useQueryClient()
@@ -23,7 +21,7 @@ export default function EntryEditor({ entry }) {
   const [sectionOrder, setSectionOrder] = useState(entry.section_order || DEFAULT_SECTION_ORDER)
   const [saving, setSaving] = useState(false)
   const [refreshMsg, setRefreshMsg] = useState('')
-  const [activeTab, setActiveTab] = useState('resume')
+  const [activeTab, setActiveTab] = useState(DOCUMENT_TYPES.RESUME)
   const [previewOpen, setPreviewOpen] = useState(false)
   const saveTimeout = useRef(null)
   const lastSaved = useRef(null)
@@ -44,7 +42,7 @@ export default function EntryEditor({ entry }) {
 
   useEffect(() => {
     if (saveTimeout.current) clearTimeout(saveTimeout.current)
-    saveTimeout.current = setTimeout(triggerSave, AUTO_SAVE_DELAY)
+    saveTimeout.current = setTimeout(triggerSave, AUTO_SAVE_DELAY_MS)
     return () => { if (saveTimeout.current) clearTimeout(saveTimeout.current) }
   }, [resume, coverLetter, hiddenSections, sectionOrder, triggerSave])
 
@@ -62,9 +60,9 @@ export default function EntryEditor({ entry }) {
     onSuccess: (data) => {
       setResume(data.resume)
       setCoverLetter(data.cover_letter)
-      queryClient.invalidateQueries({ queryKey: ['entry', entry.id] })
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ENTRY, entry.id] })
       setRefreshMsg('Resume refreshed from profile')
-      setTimeout(() => setRefreshMsg(''), 3000)
+      setTimeout(() => setRefreshMsg(''), NOTIFICATION_DISPLAY_MS)
     },
   })
 
@@ -73,7 +71,7 @@ export default function EntryEditor({ entry }) {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
         <div className="flex items-center gap-4">
           <Link to="/dashboard" className="text-gray-500 hover:text-gray-700">&larr; Back</Link>
-          <h1 className="text-xl font-bold text-[#6B4C3B]">{entry.company_name}</h1>
+          <h1 className="text-xl font-bold text-brand">{entry.company_name}</h1>
           <SaveIndicator saving={saving} />
           {refreshMsg && <span className="text-sm text-green-600">{refreshMsg}</span>}
         </div>

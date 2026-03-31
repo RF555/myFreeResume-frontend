@@ -6,13 +6,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { LuCode, LuPlus, LuX, LuGripVertical } from 'react-icons/lu'
-import SectionHeader from '../SectionHeader'
+import { cn } from '@/lib/utils'
+import SectionHeader from '@/components/organisms/EntryEditor/SectionHeader'
 
 function SortableSkill({ id, index, skill, onRemove }) {
   const { ref, isDragSource } = useSortable({ id, index, group: 'skills' })
 
   return (
-    <div ref={ref} className={`inline-flex ${isDragSource ? 'opacity-50' : ''}`}>
+    <div ref={ref} className={cn('inline-flex', isDragSource && 'opacity-50')}>
       <Badge variant="secondary" className="gap-1 pr-1 cursor-grab active:cursor-grabbing">
         <LuGripVertical className="w-3 h-3 text-gray-400" />
         {skill}
@@ -44,7 +45,7 @@ export default function SkillsSection({ data, onChange, hidden, onToggleVisibili
   }, [items, onChange])
 
   return (
-    <Card className={hidden ? 'opacity-50' : ''}>
+    <Card className={cn(hidden && 'opacity-50')}>
       <div className="px-6 pt-6">
         <SectionHeader icon={LuCode} title="Skill Highlights" hidden={hidden} onToggleVisibility={onToggleVisibility} />
       </div>

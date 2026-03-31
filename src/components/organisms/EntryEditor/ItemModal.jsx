@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { YEAR_LOOKBACK } from '@/lib/constants'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { LuPlus, LuTrash2, LuChevronUp, LuChevronDown } from 'react-icons/lu'
 
 const CURRENT_YEAR = new Date().getFullYear()
-const YEARS = Array.from({ length: 50 }, (_, i) => CURRENT_YEAR - i)
+const YEARS = Array.from({ length: YEAR_LOOKBACK }, (_, i) => CURRENT_YEAR - i)
 
 export function formatYearRange(yr) {
   if (!yr) return ''

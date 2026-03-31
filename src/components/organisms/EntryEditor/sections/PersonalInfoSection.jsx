@@ -2,7 +2,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { LuUser } from 'react-icons/lu'
-import SectionHeader from '../SectionHeader'
+import { cn } from '@/lib/utils'
+import SectionHeader from '@/components/organisms/EntryEditor/SectionHeader'
 
 export default function PersonalInfoSection({ data, onChange, hidden, onToggleVisibility }) {
   const d = data || {}
@@ -11,7 +12,7 @@ export default function PersonalInfoSection({ data, onChange, hidden, onToggleVi
   const setContact = (key, val) => onChange({ ...d, contact: { ...contact, [key]: val } })
 
   return (
-    <Card className={hidden ? 'opacity-50' : ''}>
+    <Card className={cn(hidden && 'opacity-50')}>
       <div className="px-6 pt-6">
         <SectionHeader icon={LuUser} title="Personal Information" hidden={hidden} onToggleVisibility={onToggleVisibility} />
       </div>

@@ -11,4 +11,9 @@ describe('SaveIndicator', () => {
     render(<SaveIndicator saving={false} />)
     expect(screen.getByText('Saved')).toBeInTheDocument()
   })
+
+  it('renders as a span element', () => {
+    const { container } = render(<SaveIndicator saving={false} />)
+    expect(container.querySelector('span')).toBeInTheDocument()
+  })
 })

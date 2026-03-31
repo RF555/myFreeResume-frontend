@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { DragDropProvider } from '@dnd-kit/react'
 import { useSortable } from '@dnd-kit/react/sortable'
 import { LuGripVertical } from 'react-icons/lu'
+import { cn } from '@/lib/utils'
 
 import PersonalInfoSection from './sections/PersonalInfoSection'
 import SummarySection from './sections/SummarySection'
@@ -27,7 +28,7 @@ function SortableSection({ id, index, resume, hidden, updateField, onToggleVisib
   const { ref, isDragSource } = useSortable({ id, index, group: 'resume-sections' })
 
   return (
-    <div ref={ref} className={isDragSource ? 'opacity-60 shadow-xl' : ''}>
+    <div ref={ref} className={cn(isDragSource && 'opacity-60 shadow-xl')}>
       <div className="flex gap-2 items-start">
         <div className="pt-7 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500">
           <LuGripVertical className="w-5 h-5" />

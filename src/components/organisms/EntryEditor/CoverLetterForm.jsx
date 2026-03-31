@@ -16,7 +16,7 @@ export default function CoverLetterForm({ data, onChange }) {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="font-semibold text-lg text-[#6B4C3B] mb-4">Addressee</h3>
+        <h3 className="font-semibold text-lg text-brand mb-4">Addressee</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div><Label>Hiring Manager Name</Label><Input value={cl.addressee_name || ''} onChange={(e) => set('addressee_name', e.target.value)} /></div>
           <div><Label>Company</Label><Input value={cl.addressee_company || ''} onChange={(e) => set('addressee_company', e.target.value)} /></div>
@@ -25,7 +25,7 @@ export default function CoverLetterForm({ data, onChange }) {
         </div>
       </div>
       <div>
-        <h3 className="font-semibold text-lg text-[#6B4C3B] mb-4">Body</h3>
+        <h3 className="font-semibold text-lg text-brand mb-4">Body</h3>
         {paragraphs.map((p, i) => (
           <div key={i} className="flex gap-2 mb-3">
             <Textarea rows={3} value={p} onChange={(e) => editParagraph(i, e.target.value)} className="flex-1" />

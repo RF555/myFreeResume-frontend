@@ -15,7 +15,7 @@ export default function Navbar() {
   return (
     <nav className="border-b bg-white">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 text-xl font-bold text-[#6B4C3B]">
+        <Link to="/" className="flex items-center gap-2 text-xl font-bold text-brand">
           <img src="/logo.svg" alt="" className="h-8 w-8" />
           myFreeResume
         </Link>

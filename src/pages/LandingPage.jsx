@@ -9,7 +9,7 @@ export default function LandingPage() {
       <Navbar />
       <main className="max-w-4xl mx-auto px-4 py-20 text-center">
         <img src="/logo.svg" alt="myFreeResume" className="h-24 w-24 mx-auto mb-8" />
-        <h1 className="text-5xl font-bold text-[#6B4C3B] mb-6">
+        <h1 className="text-5xl font-bold text-brand mb-6">
           Create Professional Resumes & Cover Letters
         </h1>
         <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
@@ -18,7 +18,7 @@ export default function LandingPage() {
         </p>
         <div className="flex gap-4 justify-center">
           <Link to="/register">
-            <Button size="lg" className="bg-[#6B4C3B] hover:bg-[#523A2D]">
+            <Button size="lg" className="bg-brand hover:bg-brand-dark">
               Get Started Free
             </Button>
           </Link>
