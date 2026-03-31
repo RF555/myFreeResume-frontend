@@ -5,21 +5,17 @@ import { useSortable } from '@dnd-kit/react/sortable'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { LuLayers, LuPlus, LuX, LuPencil, LuTrash2, LuGripVertical } from 'react-icons/lu'
+import { LuLayers, LuPlus, LuPencil, LuTrash2, LuGripVertical } from 'react-icons/lu'
 import { cn } from '@/lib/utils'
 import SectionHeader from '@/components/organisms/EntryEditor/SectionHeader'
+import EditableBadge from '@/components/atoms/EditableBadge/EditableBadge'
 
-function SortableSkill({ id, index, skill, onRemove }) {
+function SortableSkill({ id, index, skill, onEdit, onRemove }) {
   const { ref, isDragSource } = useSortable({ id, index, group: 'category-skills' })
 
   return (
     <div ref={ref} className={cn('inline-flex', isDragSource && 'opacity-50')}>
-      <Badge variant="secondary" className="gap-1 pr-1 cursor-grab active:cursor-grabbing">
-        <LuGripVertical className="w-3 h-3 text-gray-400" />
-        {skill}
-        <Button type="button" size="sm" variant="ghost" className="h-4 w-4 p-0 hover:bg-transparent" onClick={onRemove}><LuX className="w-3 h-3" /></Button>
-      </Badge>
+      <EditableBadge value={skill} onEdit={onEdit} onRemove={onRemove} />
     </div>
   )
 }
@@ -39,6 +35,7 @@ function CategoryEditor({ category, onSave, onCancel }) {
   }
 
   const removeSkill = (i) => setSkills(skills.filter((_, idx) => idx !== i))
+  const editSkill = (i, newValue) => { const updated = [...skills]; updated[i] = newValue; setSkills(updated) }
 
   const handleSkillDragOver = useCallback((event) => {
     const { source, target } = event.operation
@@ -83,7 +80,7 @@ function CategoryEditor({ category, onSave, onCancel }) {
       <DragDropProvider onDragOver={handleSkillDragOver}>
         <div className="flex flex-wrap gap-2">
           {skills.map((skill, i) => (
-            <SortableSkill key={skill} id={skill} index={i} skill={skill} onRemove={() => removeSkill(i)} />
+            <SortableSkill key={skill} id={skill} index={i} skill={skill} onEdit={(v) => editSkill(i, v)} onRemove={() => removeSkill(i)} />
           ))}
         </div>
       </DragDropProvider>
