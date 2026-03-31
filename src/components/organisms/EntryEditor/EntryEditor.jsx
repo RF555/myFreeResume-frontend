@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { Eye } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -9,6 +10,7 @@ import { updateEntry } from '@/lib/api/entries'
 import SaveIndicator from '@/components/atoms/SaveIndicator/SaveIndicator'
 import ResumeForm from './ResumeForm'
 import CoverLetterForm from './CoverLetterForm'
+import DocumentPreviewModal from '@/components/molecules/DocumentPreviewModal/DocumentPreviewModal'
 
 const DEFAULT_SECTION_ORDER = ['skill_highlights', 'experience', 'education', 'languages']
 const AUTO_SAVE_DELAY = 2000
@@ -21,6 +23,8 @@ export default function EntryEditor({ entry }) {
   const [sectionOrder, setSectionOrder] = useState(entry.section_order || DEFAULT_SECTION_ORDER)
   const [saving, setSaving] = useState(false)
   const [refreshMsg, setRefreshMsg] = useState('')
+  const [activeTab, setActiveTab] = useState('resume')
+  const [previewOpen, setPreviewOpen] = useState(false)
   const saveTimeout = useRef(null)
   const lastSaved = useRef(null)
 
@@ -81,11 +85,22 @@ export default function EntryEditor({ entry }) {
           <Button variant="outline" onClick={() => downloadCoverLetter(entry.id)}>Download Cover Letter</Button>
         </div>
       </div>
-      <Tabs defaultValue="resume">
-        <TabsList>
-          <TabsTrigger value="resume">Resume</TabsTrigger>
-          <TabsTrigger value="cover-letter">Cover Letter</TabsTrigger>
-        </TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <div className="flex items-center gap-2">
+          <TabsList>
+            <TabsTrigger value="resume">Resume</TabsTrigger>
+            <TabsTrigger value="cover-letter">Cover Letter</TabsTrigger>
+          </TabsList>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPreviewOpen(true)}
+            className="flex items-center gap-1.5"
+          >
+            <Eye className="h-4 w-4" />
+            Preview
+          </Button>
+        </div>
         <TabsContent value="resume" className="pt-6">
           <ResumeForm
             data={resume}
@@ -100,6 +115,12 @@ export default function EntryEditor({ entry }) {
           <CoverLetterForm data={coverLetter} onChange={setCoverLetter} />
         </TabsContent>
       </Tabs>
+      <DocumentPreviewModal
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        documentType={activeTab}
+        entryId={entry.id}
+      />
     </main>
   )
 }

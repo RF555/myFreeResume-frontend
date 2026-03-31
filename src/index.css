@@ -3,6 +3,18 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
+@font-face {
+  font-family: 'Century Gothic';
+  src: url('/fonts/century-gothic.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Calibri Light';
+  src: url('/fonts/calibri-light.ttf') format('truetype');
+  font-display: swap;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

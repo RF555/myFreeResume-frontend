@@ -31,10 +31,19 @@ npm run build
 npx vitest run
 ```
 
+## Features
+
+- Dashboard with expandable job type cards and entry management
+- Entry editor with Resume and Cover Letter tabs
+- Auto-save with 2-second debounce
+- Clone entries across job types
+- Reset resume from user profile template
+- **Document Preview** — in-browser DOCX preview for both resume and cover letter using `docx-preview`, rendered in a modal dialog with download option
+- DOCX download for resume and cover letter
+
 ## Tech Stack
 
-- React 18 + Vite
+- React 19 + Vite
 - Tailwind CSS + shadcn/ui
 - React Query (TanStack Query)
-- React Hook Form
-- React Router v6
+- React Router v7
