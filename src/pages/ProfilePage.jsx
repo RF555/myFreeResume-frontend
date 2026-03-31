@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 import { fetchResumeProfile, updateResumeProfile } from '@/lib/api/users'
@@ -11,6 +12,7 @@ import SaveIndicator from '@/components/atoms/SaveIndicator/SaveIndicator'
 import { AUTO_SAVE_DELAY_MS, DEFAULT_SECTION_ORDER, QUERY_KEYS } from '@/lib/constants'
 
 export default function ProfilePage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { refreshUser } = useAuth()
@@ -64,7 +66,7 @@ export default function ProfilePage() {
   }
 
   if (isLoading || !resume) {
-    return <div className="min-h-screen bg-gray-50"><Navbar /><div className="flex items-center justify-center py-20"><p className="text-gray-500">Loading profile...</p></div></div>
+    return <div className="min-h-screen bg-gray-50"><Navbar /><div className="flex items-center justify-center py-20"><p className="text-gray-500">{t('profile.loadingProfile')}</p></div></div>
   }
 
   return (
@@ -73,12 +75,12 @@ export default function ProfilePage() {
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-brand">My Resume Profile</h1>
+            <h1 className="text-2xl font-bold text-brand">{t('profile.title')}</h1>
             <SaveIndicator saving={saving} />
           </div>
-          <Button variant="outline" onClick={() => navigate('/dashboard')}>Go to Dashboard</Button>
+          <Button variant="outline" onClick={() => navigate('/dashboard')}>{t('profile.goToDashboard')}</Button>
         </div>
-        <p className="text-gray-500 mb-8">This is your base resume data. New entries will start with a copy of this profile.</p>
+        <p className="text-gray-500 mb-8">{t('profile.description')}</p>
         <ResumeForm data={resume} onChange={setResume} hiddenSections={hiddenSections} onToggleVisibility={toggleVisibility} sectionOrder={sectionOrder} onReorderSections={setSectionOrder} />
       </main>
     </div>

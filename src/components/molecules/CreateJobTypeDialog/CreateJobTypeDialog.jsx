@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -7,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { useCreateJobType } from '@/hooks/useJobTypes'
 
 export default function CreateJobTypeDialog() {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
   const { mutate, isPending } = useCreateJobType()
@@ -19,16 +21,16 @@ export default function CreateJobTypeDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>New Job Type</Button>
+        <Button>{t('jobType.newJobType')}</Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader><DialogTitle>Create Job Type</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{t('jobType.createJobType')}</DialogTitle></DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="jt-name">Name (e.g. Frontend Developer)</Label>
+            <Label htmlFor="jt-name">{t('jobType.namePlaceholder')}</Label>
             <Input id="jt-name" value={name} onChange={(e) => setName(e.target.value)} required />
           </div>
-          <Button type="submit" disabled={isPending}>{isPending ? 'Creating...' : 'Create'}</Button>
+          <Button type="submit" disabled={isPending}>{isPending ? t('common.creating') : t('common.create')}</Button>
         </form>
       </DialogContent>
     </Dialog>

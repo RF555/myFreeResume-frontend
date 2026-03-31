@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -9,6 +10,7 @@ import CreateEntryDialog from '@/components/molecules/CreateEntryDialog/CreateEn
 import EntryItem from '@/components/molecules/EntryItem/EntryItem'
 
 export default function JobTypeCard({ jobType }) {
+  const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
   const [editing, setEditing] = useState(false)
   const [editName, setEditName] = useState(jobType.name)
@@ -28,24 +30,24 @@ export default function JobTypeCard({ jobType }) {
           {editing ? (
             <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
               <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="w-64" />
-              <Button size="sm" onClick={handleRename}>Save</Button>
-              <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>Cancel</Button>
+              <Button size="sm" onClick={handleRename}>{t('common.save')}</Button>
+              <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>{t('common.cancel')}</Button>
             </div>
           ) : (
             <CardTitle className="text-lg">{jobType.name}</CardTitle>
           )}
           <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-            <Button variant="ghost" size="sm" onClick={() => setEditing(true)}>Rename</Button>
-            <Button variant="ghost" size="sm" className="text-red-500" onClick={() => deleteJT(jobType.id)}>Delete</Button>
+            <Button variant="ghost" size="sm" onClick={() => setEditing(true)}>{t('common.rename')}</Button>
+            <Button variant="ghost" size="sm" className="text-red-500" onClick={() => deleteJT(jobType.id)}>{t('common.delete')}</Button>
           </div>
         </div>
       </CardHeader>
       {expanded && (
         <CardContent>
           {isLoading ? (
-            <p className="text-gray-500 text-sm">Loading...</p>
+            <p className="text-gray-500 text-sm">{t('common.loading')}</p>
           ) : entries?.length === 0 ? (
-            <p className="text-gray-400 text-sm">No entries yet</p>
+            <p className="text-gray-400 text-sm">{t('dashboard.noEntries')}</p>
           ) : (
             entries?.map((entry) => <EntryItem key={entry.id} entry={entry} jobTypeId={jobType.id} />)
           )}

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { DragDropProvider } from '@dnd-kit/react'
 import { useSortable } from '@dnd-kit/react/sortable'
 import { Card, CardContent } from '@/components/ui/card'
@@ -24,6 +25,7 @@ function SortableLanguage({ id, index, language, onRemove }) {
 }
 
 export default function LanguagesSection({ data, onChange, hidden, onToggleVisibility }) {
+  const { t } = useTranslation()
   const [input, setInput] = useState('')
   const items = data || []
 
@@ -47,13 +49,13 @@ export default function LanguagesSection({ data, onChange, hidden, onToggleVisib
   return (
     <Card className={cn(hidden && 'opacity-50')}>
       <div className="px-6 pt-6">
-        <SectionHeader icon={LuGlobe} title="Languages" hidden={hidden} onToggleVisibility={onToggleVisibility} />
+        <SectionHeader icon={LuGlobe} title={t('resume.languages')} hidden={hidden} onToggleVisibility={onToggleVisibility} />
       </div>
       <CardContent>
         <div className="flex gap-2 mb-3">
           <Input value={input} onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), add())}
-            placeholder="Type a language and press Enter..." className="h-8 text-sm" />
+            placeholder={t('resume.languagePlaceholder')} className="h-8 text-sm" />
           <Button type="button" size="sm" variant="outline" onClick={add} className="h-8 px-2"><LuPlus className="w-3 h-3" /></Button>
         </div>
         <DragDropProvider onDragOver={handleDragOver}>
@@ -63,7 +65,7 @@ export default function LanguagesSection({ data, onChange, hidden, onToggleVisib
             ))}
           </div>
         </DragDropProvider>
-        {items.length === 0 && <p className="text-sm text-gray-400 text-center py-2">No languages added yet.</p>}
+        {items.length === 0 && <p className="text-sm text-gray-400 text-center py-2">{t('resume.noLanguages')}</p>}
       </CardContent>
     </Card>
   )

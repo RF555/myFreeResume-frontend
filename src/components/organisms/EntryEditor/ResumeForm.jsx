@@ -3,6 +3,7 @@ import { DragDropProvider } from '@dnd-kit/react'
 import { useSortable } from '@dnd-kit/react/sortable'
 import { LuGripVertical } from 'react-icons/lu'
 import { cn } from '@/lib/utils'
+import { DEFAULT_SECTION_ORDER } from '@/lib/constants'
 
 import PersonalInfoSection from './sections/PersonalInfoSection'
 import SummarySection from './sections/SummarySection'
@@ -19,7 +20,7 @@ const SECTION_MAP = {
   languages: { Component: LanguagesSection, dataKey: 'languages' },
 }
 
-const DEFAULT_ORDER = ['skill_highlights', 'experience', 'education', 'languages']
+const DEFAULT_ORDER = DEFAULT_SECTION_ORDER
 
 function SortableSection({ id, index, resume, hidden, updateField, onToggleVisibility }) {
   const section = SECTION_MAP[id]

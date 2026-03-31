@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Eye } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,7 @@ import DocumentPreviewModal from '@/components/molecules/DocumentPreviewModal/Do
 import { AUTO_SAVE_DELAY_MS, NOTIFICATION_DISPLAY_MS, DEFAULT_SECTION_ORDER, DOCUMENT_TYPES, QUERY_KEYS } from '@/lib/constants'
 
 export default function EntryEditor({ entry }) {
+  const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [resume, setResume] = useState(entry.resume)
   const [coverLetter, setCoverLetter] = useState(entry.cover_letter)
@@ -61,7 +63,7 @@ export default function EntryEditor({ entry }) {
       setResume(data.resume)
       setCoverLetter(data.cover_letter)
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ENTRY, entry.id] })
-      setRefreshMsg('Resume refreshed from profile')
+      setRefreshMsg(t('entry.resumeRefreshed'))
       setTimeout(() => setRefreshMsg(''), NOTIFICATION_DISPLAY_MS)
     },
   })
@@ -70,24 +72,24 @@ export default function EntryEditor({ entry }) {
     <main className="max-w-4xl mx-auto px-4 py-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
         <div className="flex items-center gap-4">
-          <Link to="/dashboard" className="text-gray-500 hover:text-gray-700">&larr; Back</Link>
+          <Link to="/dashboard" className="text-gray-500 hover:text-gray-700">&larr; {t('common.back')}</Link>
           <h1 className="text-xl font-bold text-brand">{entry.company_name}</h1>
           <SaveIndicator saving={saving} />
           {refreshMsg && <span className="text-sm text-green-600">{refreshMsg}</span>}
         </div>
         <div className="flex gap-2 flex-wrap">
           <Button variant="ghost" size="sm" onClick={() => doRefresh()} disabled={isRefreshing}>
-            {isRefreshing ? 'Refreshing...' : 'Reset from Profile'}
+            {isRefreshing ? t('entry.refreshing') : t('entry.resetFromProfile')}
           </Button>
-          <Button variant="outline" onClick={() => downloadResume(entry.id)}>Download Resume</Button>
-          <Button variant="outline" onClick={() => downloadCoverLetter(entry.id)}>Download Cover Letter</Button>
+          <Button variant="outline" onClick={() => downloadResume(entry.id)}>{t('entry.downloadResume')}</Button>
+          <Button variant="outline" onClick={() => downloadCoverLetter(entry.id)}>{t('entry.downloadCoverLetter')}</Button>
         </div>
       </div>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="flex items-center gap-2">
           <TabsList>
-            <TabsTrigger value="resume">Resume</TabsTrigger>
-            <TabsTrigger value="cover-letter">Cover Letter</TabsTrigger>
+            <TabsTrigger value={DOCUMENT_TYPES.RESUME}>{t('entry.resumeTab')}</TabsTrigger>
+            <TabsTrigger value={DOCUMENT_TYPES.COVER_LETTER}>{t('entry.coverLetterTab')}</TabsTrigger>
           </TabsList>
           <Button
             variant="outline"
@@ -96,10 +98,10 @@ export default function EntryEditor({ entry }) {
             className="flex items-center gap-1.5"
           >
             <Eye className="h-4 w-4" />
-            Preview
+            {t('common.preview')}
           </Button>
         </div>
-        <TabsContent value="resume" className="pt-6">
+        <TabsContent value={DOCUMENT_TYPES.RESUME} className="pt-6">
           <ResumeForm
             data={resume}
             onChange={setResume}
@@ -109,7 +111,7 @@ export default function EntryEditor({ entry }) {
             onReorderSections={setSectionOrder}
           />
         </TabsContent>
-        <TabsContent value="cover-letter" className="pt-6">
+        <TabsContent value={DOCUMENT_TYPES.COVER_LETTER} className="pt-6">
           <CoverLetterForm data={coverLetter} onChange={setCoverLetter} />
         </TabsContent>
       </Tabs>

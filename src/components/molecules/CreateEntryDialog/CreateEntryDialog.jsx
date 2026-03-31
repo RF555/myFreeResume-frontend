@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -8,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { useCreateEntry } from '@/hooks/useEntries'
 
 export default function CreateEntryDialog({ jobTypeId }) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [company, setCompany] = useState('')
   const { mutate, isPending } = useCreateEntry()
@@ -27,16 +29,16 @@ export default function CreateEntryDialog({ jobTypeId }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">Add Entry</Button>
+        <Button variant="outline" size="sm">{t('entryDialog.addEntry')}</Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader><DialogTitle>New Entry</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{t('entryDialog.newEntry')}</DialogTitle></DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="company">Company / Recruiter</Label>
+            <Label htmlFor="company">{t('entryDialog.companyLabel')}</Label>
             <Input id="company" value={company} onChange={(e) => setCompany(e.target.value)} required />
           </div>
-          <Button type="submit" disabled={isPending}>{isPending ? 'Creating...' : 'Create'}</Button>
+          <Button type="submit" disabled={isPending}>{isPending ? t('common.creating') : t('common.create')}</Button>
         </form>
       </DialogContent>
     </Dialog>

@@ -143,4 +143,7 @@
   html {
     @apply font-sans;
     }
+  [dir="rtl"] {
+    text-align: right;
+  }
 }

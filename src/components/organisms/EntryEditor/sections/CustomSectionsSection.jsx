@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { LuLayoutList, LuPlus, LuTrash2, LuX } from 'react-icons/lu'
 
 export default function CustomSectionsSection({ data, onChange }) {
+  const { t } = useTranslation()
   const sections = data || []
 
   const addSection = () => onChange([...sections, { title: '', items: [] }])
@@ -31,7 +33,7 @@ export default function CustomSectionsSection({ data, onChange }) {
             <div className="flex items-center justify-between pb-3">
               <div className="flex items-center gap-2 flex-1">
                 <LuLayoutList className="w-4 h-4" />
-                <Input value={sec.title} onChange={(e) => updateSection(si, { ...sec, title: e.target.value })} placeholder="Section Title" className="h-8 text-base font-semibold border-none shadow-none p-0 focus-visible:ring-0" />
+                <Input value={sec.title} onChange={(e) => updateSection(si, { ...sec, title: e.target.value })} placeholder={t('resume.sectionTitle')} className="h-8 text-base font-semibold border-none shadow-none p-0 focus-visible:ring-0" />
               </div>
               <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400 hover:text-red-600" onClick={() => removeSection(si)}><LuTrash2 className="w-3.5 h-3.5" /></Button>
             </div>
@@ -44,12 +46,12 @@ export default function CustomSectionsSection({ data, onChange }) {
                 <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400" onClick={() => removeItem(si, ii)}><LuX className="w-3 h-3" /></Button>
               </div>
             ))}
-            <Button type="button" size="sm" variant="ghost" onClick={() => addItem(si)} className="gap-1 text-xs"><LuPlus className="w-3 h-3" /> Add item</Button>
+            <Button type="button" size="sm" variant="ghost" onClick={() => addItem(si)} className="gap-1 text-xs"><LuPlus className="w-3 h-3" /> {t('resume.addItem')}</Button>
           </CardContent>
         </Card>
       ))}
       <Button type="button" variant="outline" onClick={addSection} className="w-full gap-1">
-        <LuPlus className="w-4 h-4" /> Add Custom Section
+        <LuPlus className="w-4 h-4" /> {t('resume.addCustomSection')}
       </Button>
     </div>
   )

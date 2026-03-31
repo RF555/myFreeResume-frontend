@@ -1,16 +1,18 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import LoginForm from '@/components/molecules/LoginForm/LoginForm'
 import OAuthButtons from '@/components/atoms/OAuthButtons/OAuthButtons'
 
 export default function LoginPage() {
+  const { t } = useTranslation()
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <Link to="/"><img src="/logo.svg" alt="myFreeResume" className="h-12 w-12 mx-auto mb-2" /></Link>
-          <CardTitle className="text-2xl">Sign In</CardTitle>
+          <CardTitle className="text-2xl">{t('auth.signIn')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <LoginForm />
@@ -19,12 +21,12 @@ export default function LoginPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-gray-500">Or continue with</span>
+              <span className="bg-white px-2 text-gray-500">{t('common.orContinueWith')}</span>
             </div>
           </div>
           <OAuthButtons />
           <p className="text-center text-sm text-gray-500">
-            Don't have an account? <Link to="/register" className="text-blue-600 hover:underline">Sign up</Link>
+            {t('auth.noAccount')} <Link to="/register" className="text-blue-600 hover:underline">{t('auth.signUp')}</Link>
           </p>
         </CardContent>
       </Card>

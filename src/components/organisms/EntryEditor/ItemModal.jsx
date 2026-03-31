@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
-import { YEAR_LOOKBACK } from '@/lib/constants'
+import { YEAR_LOOKBACK, FIELD_TYPES } from '@/lib/constants'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -24,20 +25,21 @@ export function formatYearRange(yr) {
 }
 
 function YearRangeEditor({ value, onChange }) {
+  const { t } = useTranslation()
   const yr = value || { from: null, to: null }
   return (
     <div className="flex items-center gap-2 mt-1">
       <Select value={yr.from ? String(yr.from) : ''} onValueChange={(v) => onChange({ ...yr, from: Number(v) })}>
-        <SelectTrigger className="flex-1 h-9 text-sm"><SelectValue placeholder="From" /></SelectTrigger>
+        <SelectTrigger className="flex-1 h-9 text-sm"><SelectValue placeholder={t('common.from')} /></SelectTrigger>
         <SelectContent>
           {YEARS.map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
         </SelectContent>
       </Select>
       <span className="text-gray-400 text-sm">–</span>
       <Select value={yr.to ? String(yr.to) : ''} onValueChange={(v) => onChange({ ...yr, to: v === 'Present' ? 'Present' : Number(v) })}>
-        <SelectTrigger className="flex-1 h-9 text-sm"><SelectValue placeholder="To" /></SelectTrigger>
+        <SelectTrigger className="flex-1 h-9 text-sm"><SelectValue placeholder={t('common.to')} /></SelectTrigger>
         <SelectContent>
-          <SelectItem value="Present">Present</SelectItem>
+          <SelectItem value="Present">{t('common.present')}</SelectItem>
           {YEARS.map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
         </SelectContent>
       </Select>
@@ -46,6 +48,7 @@ function YearRangeEditor({ value, onChange }) {
 }
 
 function BulletEditor({ bullets, onChange }) {
+  const { t } = useTranslation()
   const [input, setInput] = useState('')
   const add = () => { const v = input.trim(); if (v) { onChange([...(bullets || []), v]); setInput('') } }
   const remove = (i) => onChange((bullets || []).filter((_, idx) => idx !== i))
@@ -54,11 +57,11 @@ function BulletEditor({ bullets, onChange }) {
 
   return (
     <div>
-      <Label className="text-xs font-semibold">Bullet Points</Label>
+      <Label className="text-xs font-semibold">{t('itemModal.bulletPoints')}</Label>
       <div className="flex gap-2 mt-1 mb-2">
         <Input value={input} onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), add())}
-          placeholder="Type a bullet point and press Enter..." className="h-8 text-sm" />
+          placeholder={t('itemModal.bulletPlaceholder')} className="h-8 text-sm" />
         <Button type="button" size="sm" variant="outline" onClick={add} className="h-8 px-2"><LuPlus className="w-3 h-3" /></Button>
       </div>
       <div className="space-y-1 max-h-48 overflow-y-auto">
@@ -78,13 +81,14 @@ function BulletEditor({ bullets, onChange }) {
 }
 
 export default function ItemModal({ open, onClose, onSave, schema, initialData, title }) {
+  const { t } = useTranslation()
   const [form, setForm] = useState({})
 
   useEffect(() => {
     if (open) {
       const init = {}
       schema.forEach(f => {
-        const defaultVal = f.type === 'bullets' ? [] : f.type === 'yearRange' ? { from: null, to: null } : ''
+        const defaultVal = f.type === FIELD_TYPES.BULLETS ? [] : f.type === FIELD_TYPES.YEAR_RANGE ? { from: null, to: null } : ''
         init[f.key] = initialData?.[f.key] ?? defaultVal
       })
       setForm(init)
@@ -103,24 +107,24 @@ export default function ItemModal({ open, onClose, onSave, schema, initialData, 
           {schema.map(field => (
             <div key={field.key}>
               <Label className="text-sm font-medium">{field.label}</Label>
-              {field.type === 'text' && (
+              {field.type === FIELD_TYPES.TEXT && (
                 <Input value={form[field.key] || ''} onChange={(e) => update(field.key, e.target.value)} placeholder={field.placeholder || ''} className="mt-1" />
               )}
-              {field.type === 'textarea' && (
+              {field.type === FIELD_TYPES.TEXTAREA && (
                 <Textarea value={form[field.key] || ''} onChange={(e) => update(field.key, e.target.value)} placeholder={field.placeholder || ''} rows={3} className="mt-1" />
               )}
-              {field.type === 'yearRange' && (
+              {field.type === FIELD_TYPES.YEAR_RANGE && (
                 <YearRangeEditor value={form[field.key]} onChange={(v) => update(field.key, v)} />
               )}
-              {field.type === 'bullets' && (
+              {field.type === FIELD_TYPES.BULLETS && (
                 <div className="mt-1"><BulletEditor bullets={form[field.key] || []} onChange={(v) => update(field.key, v)} /></div>
               )}
             </div>
           ))}
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button variant="outline" onClick={onClose}>{t('common.cancel')}</Button>
+          <Button onClick={handleSave}>{t('common.save')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
