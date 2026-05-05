@@ -29,7 +29,7 @@ export default function EntryEditor({ entry }) {
   const saveTimeout = useRef(null)
   const lastSaved = useRef(null)
 
-  const fullName = (resume?.personal_info?.name || '').trim()
+  const fullName = (resume?.name || '').trim()
   const canDownload = fullName.length > 0
 
   const { mutate: save } = useMutation({

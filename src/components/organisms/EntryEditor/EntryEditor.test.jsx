@@ -36,7 +36,8 @@ function makeEntry({ name = 'Jane Doe', companyName = 'Globex' } = {}) {
     id: 'e1',
     company_name: companyName,
     resume: {
-      personal_info: { name, contact: {} },
+      name,
+      contact: {},
     },
     cover_letter: {},
     hidden_sections: {},
