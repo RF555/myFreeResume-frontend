@@ -82,11 +82,14 @@
     "resumeRefreshed": "Resume refreshed from profile",
     "resumePreview": "Resume Preview",
     "coverLetterPreview": "Cover Letter Preview",
-    "generatingPreview": "Generating preview..."
+    "generatingPreview": "Generating preview...",
+    "includeCompanyInFilename": "Include company name in filename",
+    "downloadDisabledTooltip": "Add your full name on the resume to download"
   },
   "resume": {
     "personalInfo": "Personal Information",
     "fullName": "Full Name",
+    "fullNameRequired": "required",
     "professionalTitle": "Professional Title",
     "email": "Email",
     "phone": "Phone",

@@ -82,11 +82,14 @@
     "resumeRefreshed": "קורות החיים רועננו מהפרופיל",
     "resumePreview": "תצוגה מקדימה של קורות חיים",
     "coverLetterPreview": "תצוגה מקדימה של מכתב מקדים",
-    "generatingPreview": "...יוצר תצוגה מקדימה"
+    "generatingPreview": "...יוצר תצוגה מקדימה",
+    "includeCompanyInFilename": "כלול את שם החברה בשם הקובץ",
+    "downloadDisabledTooltip": "הוסף שם מלא בקורות החיים כדי להוריד"
   },
   "resume": {
     "personalInfo": "מידע אישי",
     "fullName": "שם מלא",
+    "fullNameRequired": "חובה",
     "professionalTitle": "תפקיד מקצועי",
     "email": "אימייל",
     "phone": "טלפון",

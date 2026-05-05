@@ -25,8 +25,12 @@ export default function EntryEditor({ entry }) {
   const [refreshMsg, setRefreshMsg] = useState('')
   const [activeTab, setActiveTab] = useState(DOCUMENT_TYPES.RESUME)
   const [previewOpen, setPreviewOpen] = useState(false)
+  const [includeCompany, setIncludeCompany] = useState(false)
   const saveTimeout = useRef(null)
   const lastSaved = useRef(null)
+
+  const fullName = (resume?.personal_info?.name || '').trim()
+  const canDownload = fullName.length > 0
 
   const { mutate: save } = useMutation({
     mutationFn: (data) => updateEntry(entry.id, data),
@@ -77,12 +81,37 @@ export default function EntryEditor({ entry }) {
           <SaveIndicator saving={saving} />
           {refreshMsg && <span className="text-sm text-green-600">{refreshMsg}</span>}
         </div>
-        <div className="flex gap-2 flex-wrap">
-          <Button variant="ghost" size="sm" onClick={() => doRefresh()} disabled={isRefreshing}>
-            {isRefreshing ? t('entry.refreshing') : t('entry.resetFromProfile')}
-          </Button>
-          <Button variant="outline" onClick={() => downloadResume(entry.id)}>{t('entry.downloadResume')}</Button>
-          <Button variant="outline" onClick={() => downloadCoverLetter(entry.id)}>{t('entry.downloadCoverLetter')}</Button>
+        <div className="flex flex-col items-start sm:items-end gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <Button variant="ghost" size="sm" onClick={() => doRefresh()} disabled={isRefreshing}>
+              {isRefreshing ? t('entry.refreshing') : t('entry.resetFromProfile')}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => downloadResume(entry.id, fullName, entry.company_name, includeCompany)}
+              disabled={!canDownload}
+              title={!canDownload ? t('entry.downloadDisabledTooltip') : undefined}
+            >
+              {t('entry.downloadResume')}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => downloadCoverLetter(entry.id, fullName, entry.company_name, includeCompany)}
+              disabled={!canDownload}
+              title={!canDownload ? t('entry.downloadDisabledTooltip') : undefined}
+            >
+              {t('entry.downloadCoverLetter')}
+            </Button>
+          </div>
+          <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={includeCompany}
+              onChange={(e) => setIncludeCompany(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300"
+            />
+            {t('entry.includeCompanyInFilename')}
+          </label>
         </div>
       </div>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
