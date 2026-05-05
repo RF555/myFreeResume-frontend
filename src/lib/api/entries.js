@@ -10,6 +10,26 @@ export const refreshEntryFromProfile = (id) => apiJson(`/api/entries/${id}/refre
 export const fetchResumeBlob = (id) => apiBlob(`/api/entries/${id}/download/resume`)
 export const fetchCoverLetterBlob = (id) => apiBlob(`/api/entries/${id}/download/cover-letter`)
 
+const ILLEGAL_FILENAME_CHARS = /[<>:"/\\|?*]/g
+
+export function sanitizeForFilename(str) {
+  if (!str) return ''
+  return String(str)
+    .replace(ILLEGAL_FILENAME_CHARS, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+export function buildFilename(fullName, docType, companyName, includeCompany) {
+  const safeName = sanitizeForFilename(fullName)
+  const safeCompany = sanitizeForFilename(companyName)
+  const base = `${safeName} - ${docType}`
+  if (includeCompany && safeCompany) {
+    return `${base} - ${safeCompany}.docx`
+  }
+  return `${base}.docx`
+}
+
 function triggerDownload(blob, filename) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -19,12 +39,12 @@ function triggerDownload(blob, filename) {
   URL.revokeObjectURL(url)
 }
 
-export async function downloadResume(id) {
+export async function downloadResume(id, fullName, companyName, includeCompany) {
   const blob = await fetchResumeBlob(id)
-  triggerDownload(blob, 'Resume.docx')
+  triggerDownload(blob, buildFilename(fullName, 'Resume', companyName, includeCompany))
 }
 
-export async function downloadCoverLetter(id) {
+export async function downloadCoverLetter(id, fullName, companyName, includeCompany) {
   const blob = await fetchCoverLetterBlob(id)
-  triggerDownload(blob, 'Cover Letter.docx')
+  triggerDownload(blob, buildFilename(fullName, 'Cover Letter', companyName, includeCompany))
 }

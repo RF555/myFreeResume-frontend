@@ -20,7 +20,18 @@ export default function PersonalInfoSection({ data, onChange, hidden, onToggleVi
       </div>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><Label>{t('resume.fullName')}</Label><Input value={d.name || ''} onChange={(e) => set('name', e.target.value)} /></div>
+          <div>
+            <Label>
+              {t('resume.fullName')}{' '}
+              <span className="text-red-500" aria-label={t('resume.fullNameRequired')}>*</span>
+            </Label>
+            <Input
+              value={d.name || ''}
+              onChange={(e) => set('name', e.target.value)}
+              required
+              aria-required="true"
+            />
+          </div>
           <div><Label>{t('resume.professionalTitle')}</Label><Input value={d.professional_title || ''} onChange={(e) => set('professional_title', e.target.value)} /></div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
